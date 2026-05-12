@@ -65,11 +65,25 @@ body {
   display: none;
   max-width: 720px;
   margin: 0 auto;
-  padding: 32px 24px 48px;
+  padding: 20px 24px 36px;
 }
 #quiz-screen.active { display: block; }
 
-.prog-wrap { margin-bottom: 14px; }
+.quiz-title-bar {
+  text-align: center;
+  margin-bottom: 12px;
+}
+.quiz-title-text {
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  background: linear-gradient(90deg, #63b3ed, #b794f4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.prog-wrap { margin-bottom: 10px; }
 .prog-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
 .prog-label { font-size: 0.7rem; color: #718096; letter-spacing: 0.08em; }
 .prog-num { font-size: 0.9rem; font-weight: 700; color: #63b3ed; }
@@ -129,7 +143,9 @@ body {
 .feedback-label { font-size: 0.95rem; font-weight: 700; margin-bottom: 7px; }
 .lbl-correct { color: #68d391; }
 .lbl-wrong { color: #fc8181; }
-.feedback-exp { font-size: 0.86rem; line-height: 1.75; color: #a0aec0; }
+.feedback-ans-row { font-size: 0.82rem; color: #718096; margin-bottom: 7px; }
+.feedback-ans-row span { font-weight: 700; color: #a0aec0; }
+.feedback-exp { font-size: 0.86rem; line-height: 1.75; color: #a0aec0; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 7px; }
 .next-btn {
   width: 100%;
   padding: 14px;
@@ -158,12 +174,14 @@ body {
     display: none;
     flex-direction: column;
     padding:
-      calc(env(safe-area-inset-top, 0px) + 10px)
+      calc(env(safe-area-inset-top, 0px) + 8px)
       14px
       0;
     max-width: none;
     margin: 0;
   }
+  .quiz-title-bar { margin-bottom: 6px; }
+  .quiz-title-text { font-size: 0.72rem; }
   #quiz-screen.active { display: flex; }
 
   .prog-wrap { flex-shrink: 0; margin-bottom: 10px; }
@@ -278,6 +296,9 @@ body {
 
 <!-- QUIZ -->
 <div id="quiz-screen">
+  <div class="quiz-title-bar">
+    <span class="quiz-title-text">STC ASSOCIATE</span>
+  </div>
   <div class="prog-wrap">
     <div class="prog-top">
       <span class="prog-label">QUESTION</span>
@@ -379,10 +400,11 @@ function answer(idx) {
   else document.getElementById('btn-batsu').className = 'ans-btn btn-batsu selected';
   answers.push({ q: q, choice: choice, correct: correct });
   var box = document.getElementById('result-box');
+  var ansRow = '<div class="feedback-ans-row">あなたの回答：<span>' + choice + '</span>　正解：<span>' + q.ans + '</span></div>';
   if (correct) {
-    box.innerHTML = '<div class="feedback-correct"><div class="feedback-label lbl-correct">✓ 正解！</div><div class="feedback-exp">' + esc(q.exp) + '</div></div>';
+    box.innerHTML = '<div class="feedback-correct"><div class="feedback-label lbl-correct">✓ 正解！</div>' + ansRow + '<div class="feedback-exp">' + esc(q.exp) + '</div></div>';
   } else {
-    box.innerHTML = '<div class="feedback-wrong"><div class="feedback-label lbl-wrong">✗ 不正解　正解：' + q.ans + '</div><div class="feedback-exp">' + esc(q.exp) + '</div></div>';
+    box.innerHTML = '<div class="feedback-wrong"><div class="feedback-label lbl-wrong">✗ 不正解</div>' + ansRow + '<div class="feedback-exp">' + esc(q.exp) + '</div></div>';
   }
   document.getElementById('result-area').classList.add('show');
 }
