@@ -532,10 +532,23 @@ function answer(idx) {
   answers.push({ q: q, choice: choice, correct: correct });
   var box = document.getElementById('result-box');
   var ansRow = '<div class="feedback-ans-row">あなたの回答：<span>' + choice + '</span>　正解：<span>' + q.ans + '</span></div>';
+  var relCards = getRelatedCards(q.q, q.exp);
+  var cardsHtml = '';
+  if (relCards.length > 0) {
+    cardsHtml = '<div class="card-section">' +
+      '<button class="card-toggle" onclick="toggleCards(this,\'fb-cards\')">' +
+        '<span class="card-toggle-icon">📚 関連暗記カード（' + relCards.length + '枚）</span>' +
+        '<span class="card-toggle-arrow">▼</span>' +
+      '</button>' +
+      '<div class="card-body" id="fb-cards">' +
+        relCards.map(renderCard).join('') +
+      '</div>' +
+      '</div>';
+  }
   if (correct) {
-    box.innerHTML = '<div class="feedback-correct"><div class="feedback-label lbl-correct">✓ 正解！</div>' + ansRow + '<div class="feedback-exp">' + esc(q.exp) + '</div></div>';
+    box.innerHTML = '<div class="feedback-correct"><div class="feedback-label lbl-correct">✓ 正解！</div>' + ansRow + '<div class="feedback-exp">' + esc(q.exp) + '</div></div>' + cardsHtml;
   } else {
-    box.innerHTML = '<div class="feedback-wrong"><div class="feedback-label lbl-wrong">✗ 不正解</div>' + ansRow + '<div class="feedback-exp">' + esc(q.exp) + '</div></div>';
+    box.innerHTML = '<div class="feedback-wrong"><div class="feedback-label lbl-wrong">✗ 不正解</div>' + ansRow + '<div class="feedback-exp">' + esc(q.exp) + '</div></div>' + cardsHtml;
   }
   document.getElementById('result-area').classList.add('show');
 }
