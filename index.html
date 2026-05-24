@@ -92,12 +92,23 @@ body {
   display: none; max-width: 720px; margin: 0 auto; padding: 20px 24px 36px;
 }
 #quiz-screen.active { display: block; }
-.quiz-title-bar { text-align: center; margin-bottom: 12px; }
+.quiz-title-bar {
+  display: flex; align-items: center; justify-content: center;
+  position: relative; margin-bottom: 12px;
+}
 .quiz-title-text {
   font-size: 0.78rem; font-weight: 900; letter-spacing: 0.18em;
   background: linear-gradient(90deg, #63b3ed, #b794f4);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
+.quiz-home-btn {
+  position: absolute; left: 0;
+  background: rgba(255,255,255,0.07); border: none; color: #718096;
+  border-radius: 50%; width: 30px; height: 30px; font-size: 0.9rem;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.quiz-home-btn:hover { background: rgba(255,255,255,0.15); color: #e2e8f0; }
 .prog-wrap { margin-bottom: 10px; }
 .prog-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
 .prog-label { font-size: 0.7rem; color: #718096; letter-spacing: 0.08em; }
@@ -290,7 +301,7 @@ body {
   min-width: 52px; text-align: center; flex-shrink: 0;
 }
 .modal-close-btn {
-  width: 100%; padding: 14px; font-size: 0.88rem; font-weight: 700;
+  width: 100%; padding: 24px; font-size: 0.88rem; font-weight: 700;
   background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
   color: #718096; border-radius: 12px; cursor: pointer; transition: background 0.15s;
   letter-spacing: 0.04em;
@@ -323,7 +334,10 @@ body {
 
 <!-- QUIZ -->
 <div id="quiz-screen">
-  <div class="quiz-title-bar"><span class="quiz-title-text">STC ASSOCIATE</span></div>
+  <div class="quiz-title-bar">
+    <button class="quiz-home-btn" onclick="goHome()">⌂</button>
+    <span class="quiz-title-text">STC ASSOCIATE</span>
+  </div>
   <div class="prog-wrap">
     <div class="prog-top">
       <span class="prog-label">QUESTION</span>
@@ -655,6 +669,14 @@ function showFinal() {
       slideHtml;
     list.appendChild(div);
   }
+  window.scrollTo(0, 0);
+}
+
+function goHome() {
+  document.getElementById('quiz-screen').classList.remove('active');
+  document.getElementById('result-area').classList.remove('show');
+  quizMode = 'random'; quizRound = '';
+  document.getElementById('start-screen').style.display = 'block';
   window.scrollTo(0, 0);
 }
 
