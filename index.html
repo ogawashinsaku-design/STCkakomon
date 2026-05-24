@@ -42,6 +42,50 @@ body {
   transition: transform 0.15s, box-shadow 0.15s;
 }
 .start-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(102,126,234,0.5); }
+.kakomon-btn {
+  display: block; width: 260px; margin: 12px auto 0;
+  padding: 16px 0; font-size: 1.15rem; font-weight: 900; letter-spacing: 0.12em;
+  background: linear-gradient(135deg, #2d6a4f, #40916c);
+  color: white; border: none; border-radius: 50px; cursor: pointer;
+  box-shadow: 0 8px 32px rgba(64,145,108,0.4);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.kakomon-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(64,145,108,0.5); }
+
+/* ── 回選択画面 ── */
+#kakomon-select-screen {
+  display: none; max-width: 720px; margin: 0 auto;
+  padding: 40px 24px 60px;
+}
+#kakomon-select-screen.show { display: block; }
+.kakomon-select-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 6px;
+}
+.back-btn {
+  background: rgba(255,255,255,0.08); border: none; color: #a0aec0;
+  border-radius: 50%; width: 36px; height: 36px; font-size: 1.1rem;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background 0.15s;
+}
+.back-btn:hover { background: rgba(255,255,255,0.15); color: #e2e8f0; }
+.kakomon-select-title {
+  font-size: 1.1rem; font-weight: 900;
+  background: linear-gradient(90deg, #68d391, #63b3ed);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.kakomon-select-sub { font-size: 0.78rem; color: #718096; margin-bottom: 20px; padding-left: 48px; }
+.round-list { display: flex; flex-direction: column; gap: 10px; }
+.round-item {
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px; padding: 16px 20px; cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  border-left: 4px solid rgba(64,145,108,0.5);
+}
+.round-item:hover { background: rgba(64,145,108,0.1); border-color: rgba(64,145,108,0.4); transform: translateX(3px); }
+.round-item:active { transform: scale(0.98); }
+.round-name { font-size: 1rem; font-weight: 700; color: #e2e8f0; }
+.round-meta { font-size: 0.75rem; color: #718096; }
 
 /* ── QUIZ PC ── */
 #quiz-screen {
@@ -263,7 +307,18 @@ body {
   <div class="game-sub">過去問クイズ ／ 第53回〜第68回</div>
   <div class="start-meta"><strong>25問</strong> ランダム出題</div>
   <button class="start-btn" id="start-btn">START</button>
+  <button class="kakomon-btn" id="kakomon-btn">過去問</button>
   <button class="start-slide-btn" onclick="openModal([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14],0)">📄 スライドで学ぶ</button>
+</div>
+
+<!-- 回選択 -->
+<div id="kakomon-select-screen">
+  <div class="kakomon-select-header">
+    <button class="back-btn" onclick="showStart()">‹</button>
+    <div class="kakomon-select-title">過去問モード</div>
+  </div>
+  <div class="kakomon-select-sub">回次を選んでください</div>
+  <div class="round-list" id="round-list"></div>
 </div>
 
 <!-- QUIZ -->
@@ -296,7 +351,7 @@ body {
     <div class="score-panel">
       <div class="score-lbl">FINAL SCORE</div>
       <div class="score-big" id="final-score"></div>
-      <div class="score-denom">/ 25問</div>
+      <div class="score-denom" id="score-denom">/ 25問</div>
       <div class="score-track"><div class="score-fill" id="score-bar" style="width:0%"></div></div>
       <div class="score-pct" id="score-pct"></div>
     </div>
@@ -432,6 +487,57 @@ document.addEventListener('keydown', function(e) {
 });
 
 var quiz = [], current = 0, answers = [], answered = false;
+var quizTotal = 25, quizMode = 'random', quizRound = '';
+
+// ── 回別グループ ──
+var ROUNDS = (function() {
+  var map = {};
+  for (var i = 0; i < ALL_QUESTIONS.length; i++) {
+    var r = ALL_QUESTIONS[i].id.split('\u0020')[0];
+    if (!map[r]) map[r] = [];
+    map[r].push(ALL_QUESTIONS[i]);
+  }
+  return map;
+})();
+
+function showStart() {
+  document.getElementById('kakomon-select-screen').className = '';
+  document.getElementById('final-screen').className = '';
+  document.getElementById('start-screen').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+function showKakomonSelect() {
+  document.getElementById('start-screen').style.display = 'none';
+  var list = document.getElementById('round-list');
+  list.innerHTML = '';
+  var roundKeys = Object.keys(ROUNDS).sort(function(a,b) {
+    return parseInt(a.replace(/[^0-9]/g,'')) - parseInt(b.replace(/[^0-9]/g,''));
+  });
+  for (var i = 0; i < roundKeys.length; i++) {
+    var r = roundKeys[i];
+    var n = ROUNDS[r].length;
+    var div = document.createElement('div');
+    div.className = 'round-item';
+    div.innerHTML = '<span class="round-name">' + esc(r) + '</span><span class="round-meta">' + n + '問</span>';
+    div.setAttribute('data-round', r);
+    div.addEventListener('click', (function(round){ return function(){ startKakomonQuiz(round); }; })(r));
+    list.appendChild(div);
+  }
+  document.getElementById('kakomon-select-screen').className = 'show';
+}
+
+function startKakomonQuiz(round) {
+  quizMode = 'kakomon';
+  quizRound = round;
+  quiz = ROUNDS[round].slice();
+  quizTotal = quiz.length;
+  current = 0; answers = []; answered = false;
+  document.getElementById('kakomon-select-screen').className = '';
+  document.getElementById('final-screen').className = '';
+  document.getElementById('quiz-screen').classList.add('active');
+  showQuestion();
+}
 
 function shuffle(arr) {
   var a = arr.slice();
@@ -446,7 +552,9 @@ function esc(s) {
 }
 
 function startQuiz() {
+  quizMode = 'random'; quizRound = '';
   quiz = shuffle(ALL_QUESTIONS).slice(0, 25);
+  quizTotal = 25;
   current = 0; answers = []; answered = false;
   document.getElementById('start-screen').style.display = 'none';
   document.getElementById('final-screen').className = '';
@@ -457,8 +565,8 @@ function startQuiz() {
 function showQuestion() {
   answered = false;
   var q = quiz[current];
-  document.getElementById('prog-bar').style.width = ((current / 25) * 100) + '%';
-  document.getElementById('prog-text').textContent = (current + 1) + ' / 25';
+  document.getElementById('prog-bar').style.width = ((current / quizTotal) * 100) + '%';
+  document.getElementById('prog-text').textContent = (current + 1) + ' / ' + quizTotal;
   document.getElementById('q-source').textContent = q.id;
   document.getElementById('q-text').textContent = q.q;
   document.getElementById('btn-maru').className = 'ans-btn btn-maru';
@@ -467,7 +575,7 @@ function showQuestion() {
   document.getElementById('btn-batsu').disabled = false;
   var ra = document.getElementById('result-area');
   ra.classList.remove('show');
-  document.getElementById('next-btn').textContent = current === 24 ? '結果を見る' : '次の問題へ →';
+  document.getElementById('next-btn').textContent = current === quizTotal - 1 ? '結果を見る' : '次の問題へ →';
   var qc = document.querySelector('.q-card');
   if (qc) qc.scrollTop = 0;
 }
@@ -505,13 +613,13 @@ function nextQuestion() {
     ra.classList.remove('show');
     setTimeout(function() {
       current++;
-      if (current >= 25) showFinal();
+      if (current >= quizTotal) showFinal();
       else showQuestion();
     }, 320);
   } else {
     ra.classList.remove('show');
     current++;
-    if (current >= 25) showFinal();
+    if (current >= quizTotal) showFinal();
     else showQuestion();
   }
 }
@@ -522,8 +630,9 @@ function showFinal() {
   document.getElementById('final-screen').className = 'show';
   var correctCount = 0;
   for (var i = 0; i < answers.length; i++) { if (answers[i].correct) correctCount++; }
-  var pct = Math.round((correctCount / 25) * 100);
+  var pct = Math.round((correctCount / quizTotal) * 100);
   document.getElementById('final-score').textContent = correctCount;
+  document.getElementById('score-denom').textContent = '/ ' + quizTotal + '問' + (quizRound ? '　' + quizRound : '');
   document.getElementById('score-pct').textContent = pct + '%';
   setTimeout(function() { document.getElementById('score-bar').style.width = pct + '%'; }, 150);
 
@@ -552,11 +661,16 @@ function showFinal() {
 function restartQuiz() {
   document.getElementById('final-screen').className = '';
   document.getElementById('quiz-screen').classList.remove('active');
-  document.getElementById('start-screen').style.display = 'block';
+  if (quizMode === 'kakomon') {
+    showKakomonSelect();
+  } else {
+    document.getElementById('start-screen').style.display = 'block';
+  }
   window.scrollTo(0, 0);
 }
 
 document.getElementById('start-btn').addEventListener('click', startQuiz);
+document.getElementById('kakomon-btn').addEventListener('click', showKakomonSelect);
 document.getElementById('btn-maru').addEventListener('click', function() { answer(0); });
 document.getElementById('btn-batsu').addEventListener('click', function() { answer(1); });
 document.getElementById('next-btn').addEventListener('click', nextQuestion);
