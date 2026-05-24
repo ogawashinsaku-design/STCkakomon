@@ -526,7 +526,7 @@ function showKakomonSelect() {
   var list = document.getElementById('round-list');
   list.innerHTML = '';
   var roundKeys = Object.keys(ROUNDS).sort(function(a,b) {
-    return parseInt(a.replace(/[^0-9]/g,'')) - parseInt(b.replace(/[^0-9]/g,''));
+    return parseInt(b.replace(/[^0-9]/g,'')) - parseInt(a.replace(/[^0-9]/g,''));
   });
   for (var i = 0; i < roundKeys.length; i++) {
     var r = roundKeys[i];
