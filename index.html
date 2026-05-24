@@ -97,7 +97,7 @@ body {
 .feedback-ans-row span { font-weight: 700; color: #a0aec0; }
 .feedback-exp { font-size: 0.86rem; line-height: 1.75; color: #a0aec0; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 7px; }
 .next-btn {
-  width: 100%; padding: 14px; font-size: 0.95rem; font-weight: 700;
+  width: 100%; padding: 20px; font-size: 1rem; font-weight: 900;
   background: linear-gradient(135deg, #667eea, #764ba2);
   color: white; border: none; border-radius: 12px; cursor: pointer;
   letter-spacing: 0.06em; box-shadow: 0 4px 20px rgba(102,126,234,0.35); transition: opacity 0.2s;
@@ -118,16 +118,25 @@ body {
   .q-card { flex: 1; overflow-y: auto; min-height: 0; -webkit-overflow-scrolling: touch; margin-bottom: 10px; }
   .btn-row { flex-shrink: 0; margin-bottom: 0; padding-bottom: calc(env(safe-area-inset-bottom,0px) + 14px); }
   #result-area {
-    display: block !important; position: fixed; bottom: 0; left: 0; right: 0;
+    display: flex !important; flex-direction: column;
+    position: fixed; bottom: 0; left: 0; right: 0;
     background: rgba(18,14,50,0.97); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
     border-top: 1px solid rgba(255,255,255,0.15); border-radius: 20px 20px 0 0;
-    padding: 20px 16px calc(env(safe-area-inset-bottom,0px) + 20px);
-    max-height: 56vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    max-height: 65vh;
     transform: translateY(105%); transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
     z-index: 200; animation: none !important;
   }
   #result-area.show { transform: translateY(0); }
-  .feedback-correct, .feedback-wrong { margin-bottom: 14px; }
+  #result-box {
+    flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 18px 16px 12px;
+  }
+  .next-btn {
+    flex-shrink: 0; border-radius: 0;
+    padding: 20px 16px calc(env(safe-area-inset-bottom,0px) + 20px);
+    box-shadow: none;
+  }
+  .feedback-correct, .feedback-wrong { margin-bottom: 12px; }
 }
 
 /* ── FINAL ── */
@@ -184,48 +193,72 @@ body {
 .slide-btn-icon { font-size: 1rem; }
 .slide-btn-text { font-size: 0.78rem; font-weight: 700; color: #63b3ed; letter-spacing: 0.04em; }
 .slide-btn-count { margin-left: auto; font-size: 0.68rem; color: #718096; }
+/* スタート画面スライドボタン */
+.start-slide-btn {
+  margin-top: 14px; padding: 13px 44px; font-size: 0.88rem; font-weight: 700;
+  background: rgba(99,179,237,0.08); border: 1px solid rgba(99,179,237,0.35);
+  color: #63b3ed; border-radius: 50px; cursor: pointer;
+  letter-spacing: 0.06em; transition: background 0.15s;
+  display: block; margin-left: auto; margin-right: auto;
+}
+.start-slide-btn:hover { background: rgba(99,179,237,0.18); }
 
 /* ── モーダル ── */
 #slide-modal {
   display: none; position: fixed; inset: 0; z-index: 1000;
-  background: rgba(0,0,0,0.92); backdrop-filter: blur(12px);
-  flex-direction: column; align-items: center; justify-content: center;
+  background: #0a0814;
+  flex-direction: column;
 }
 #slide-modal.open { display: flex; }
-.modal-header {
-  display: flex; align-items: center; justify-content: space-between;
-  width: 100%; max-width: 860px; padding: 12px 16px 8px;
-  flex-shrink: 0;
-}
-.modal-title { font-size: 0.75rem; color: #718096; letter-spacing: 0.08em; }
-.modal-close {
-  background: rgba(255,255,255,0.1); border: none; color: #e2e8f0;
-  border-radius: 50%; width: 36px; height: 36px; font-size: 1.1rem;
+.modal-close-x {
+  position: absolute; top: 12px; right: 14px; z-index: 10;
+  background: rgba(255,255,255,0.12); border: none; color: #e2e8f0;
+  border-radius: 50%; width: 36px; height: 36px; font-size: 0.95rem;
   cursor: pointer; display: flex; align-items: center; justify-content: center;
-  transition: background 0.15s;
 }
-.modal-close:hover { background: rgba(255,255,255,0.2); }
+.modal-close-x:hover { background: rgba(255,255,255,0.22); }
 .modal-img-wrap {
-  flex: 1; min-height: 0; width: 100%; max-width: 860px;
-  padding: 0 16px; display: flex; align-items: center; justify-content: center;
+  flex: 1; min-height: 0;
+  padding: 48px 12px 8px;
+  display: flex; align-items: center; justify-content: center;
 }
 .modal-img {
-  max-width: 100%; max-height: 100%; border-radius: 12px;
+  max-width: 100%; max-height: 100%; border-radius: 10px;
   box-shadow: 0 8px 40px rgba(0,0,0,0.6); object-fit: contain;
 }
-.modal-nav {
-  display: flex; align-items: center; gap: 16px;
-  padding: 12px 16px 20px; flex-shrink: 0;
+.modal-bottom-bar {
+  flex-shrink: 0;
+  background: rgba(15,12,41,0.98);
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding: 12px 14px calc(env(safe-area-inset-bottom,0px) + 12px);
+}
+.modal-slide-title {
+  font-size: 0.7rem; color: #718096; text-align: center;
+  margin-bottom: 10px; min-height: 1em; padding: 0 4px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.modal-nav-row {
+  display: flex; gap: 8px; align-items: center; margin-bottom: 8px;
 }
 .modal-nav-btn {
+  flex: 1; padding: 14px 0; font-size: 0.88rem; font-weight: 700;
   background: rgba(255,255,255,0.1); border: none; color: #e2e8f0;
-  border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem;
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  transition: background 0.15s;
+  border-radius: 12px; cursor: pointer; transition: background 0.15s;
+  letter-spacing: 0.04em;
 }
-.modal-nav-btn:hover { background: rgba(255,255,255,0.2); }
-.modal-nav-btn:disabled { opacity: 0.25; cursor: default; }
-.modal-page-indicator { font-size: 0.8rem; color: #718096; min-width: 60px; text-align: center; }
+.modal-nav-btn:hover { background: rgba(255,255,255,0.18); }
+.modal-nav-btn:disabled { opacity: 0.22; cursor: default; }
+.modal-page-indicator {
+  font-size: 0.88rem; font-weight: 700; color: #a0aec0;
+  min-width: 52px; text-align: center; flex-shrink: 0;
+}
+.modal-close-btn {
+  width: 100%; padding: 14px; font-size: 0.88rem; font-weight: 700;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
+  color: #718096; border-radius: 12px; cursor: pointer; transition: background 0.15s;
+  letter-spacing: 0.04em;
+}
+.modal-close-btn:hover { background: rgba(255,255,255,0.12); color: #e2e8f0; }
 </style>
 </head>
 <body>
@@ -237,6 +270,7 @@ body {
   <div class="game-sub">過去問クイズ ／ 第53回〜第68回</div>
   <div class="start-meta"><strong>25問</strong> ランダム出題</div>
   <button class="start-btn" id="start-btn">START</button>
+  <button class="start-slide-btn" onclick="openModal([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14],0)">📄 スライドで学ぶ</button>
 </div>
 
 <!-- QUIZ -->
@@ -285,17 +319,18 @@ body {
 
 <!-- スライドモーダル -->
 <div id="slide-modal">
-  <div class="modal-header">
-    <span class="modal-title" id="modal-title"></span>
-    <button class="modal-close" onclick="closeModal()">✕</button>
-  </div>
+  <button class="modal-close-x" onclick="closeModal()">✕</button>
   <div class="modal-img-wrap">
     <img class="modal-img" id="modal-img" src="" alt="">
   </div>
-  <div class="modal-nav">
-    <button class="modal-nav-btn" id="modal-prev" onclick="modalNav(-1)">‹</button>
-    <span class="modal-page-indicator" id="modal-indicator"></span>
-    <button class="modal-nav-btn" id="modal-next" onclick="modalNav(1)">›</button>
+  <div class="modal-bottom-bar">
+    <div class="modal-slide-title" id="modal-title"></div>
+    <div class="modal-nav-row">
+      <button class="modal-nav-btn" id="modal-prev" onclick="modalNav(-1)">← 前へ</button>
+      <span class="modal-page-indicator" id="modal-indicator"></span>
+      <button class="modal-nav-btn" id="modal-next" onclick="modalNav(1)">次へ →</button>
+    </div>
+    <button class="modal-close-btn" onclick="closeModal()">✕ 閉じる</button>
   </div>
 </div>
 
