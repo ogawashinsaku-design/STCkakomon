@@ -118,25 +118,16 @@ body {
   .q-card { flex: 1; overflow-y: auto; min-height: 0; -webkit-overflow-scrolling: touch; margin-bottom: 10px; }
   .btn-row { flex-shrink: 0; margin-bottom: 0; padding-bottom: calc(env(safe-area-inset-bottom,0px) + 14px); }
   #result-area {
-    display: flex !important; flex-direction: column;
-    position: fixed; bottom: 0; left: 0; right: 0;
+    display: block !important; position: fixed; bottom: 0; left: 0; right: 0;
     background: rgba(18,14,50,0.97); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
     border-top: 1px solid rgba(255,255,255,0.15); border-radius: 20px 20px 0 0;
-    max-height: 65vh;
+    padding: 20px 16px calc(env(safe-area-inset-bottom,0px) + 20px);
+    max-height: 60vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
     transform: translateY(105%); transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
     z-index: 200; animation: none !important;
   }
   #result-area.show { transform: translateY(0); }
-  #result-box {
-    flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
-    padding: 18px 16px 12px;
-  }
-  .next-btn {
-    flex-shrink: 0; border-radius: 0;
-    padding: 20px 16px calc(env(safe-area-inset-bottom,0px) + 20px);
-    box-shadow: none;
-  }
-  .feedback-correct, .feedback-wrong { margin-bottom: 12px; }
+  .feedback-correct, .feedback-wrong { margin-bottom: 14px; }
 }
 
 /* ── FINAL ── */
